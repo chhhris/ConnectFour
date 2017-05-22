@@ -1,0 +1,55 @@
+<style type="text/css">
+  th {
+    border: 3px solid purple;
+  }
+  td {
+    border: 1px dotted gray;
+  }
+</style>
+
+
+<div class="container">
+  <h1>Connect Four</h1>
+  <br/>
+  <div>
+    <% x = 6; y = 7 %>
+    <% @board = Array.new(x, Array.new(y, 0)) %>
+    <table>
+      <tbody>
+        <% @board.each do |row| %>
+          <tr class="row">
+            <% row.each do |cell| %>
+              <td class="col">
+                <%= cell %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr class="row">
+          <% slot = 1 %>
+          <% y.times do %>
+            <th class="col">
+              <%# "No. #{slot}" %>
+              <%= slot %>
+            </th>
+            <% slot += 1 %>
+          <% end %>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <br/>
+  <div>
+    <form method="POST" action="/" class="bd-example">
+      <fieldset>
+        <legend>Drop one of your checkers down any of the slots of the grid.</legend>
+        <p>
+          <label for="input">Enter slot number</label>
+          <input type="text" id="input" placeholder="0, 1, 2, 3...">
+        </p>
+      </fieldset>
+    </form>
+  </div>
+</div>
