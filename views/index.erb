@@ -1,25 +1,25 @@
-<style type="text/css">
-  th {
-    border: 3px solid purple;
-  }
-  td {
-    border: 1px dotted gray;
-  }
-</style>
-
-
-<div class="container">
+<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
+  <form method="POST" action="/reset" class="form-inline my-2 my-lg-0">
+    <button type="submit">Start Over</button>
+  </form>
+</nav>
+<div class="container mt-5 p-3">
   <h1>Connect Four</h1>
-  <br/>
-  <div>
-    <% x = 6; y = 7 %>
-    <% @board = Array.new(x, Array.new(y, 0)) %>
+  <div class="container">
     <table>
       <tbody>
         <% @board.each do |row| %>
           <tr class="row">
             <% row.each do |cell| %>
-              <td class="col">
+              <%
+                  cell_style =
+                    case cell
+                    when '[]' then 'empty'
+                    when 'o' then 'player1'
+                    when 'x' then 'player2'
+                    end
+                %>
+              <td class="col <%= cell_style %>">
                 <%= cell %>
               </td>
             <% end %>
@@ -29,9 +29,9 @@
       <tfoot>
         <tr class="row">
           <% slot = 1 %>
+          <% y = 6 %>
           <% y.times do %>
             <th class="col">
-              <%# "No. #{slot}" %>
               <%= slot %>
             </th>
             <% slot += 1 %>
@@ -42,14 +42,21 @@
   </div>
   <br/>
   <div>
-    <form method="POST" action="/" class="bd-example">
+    <h2>
+      Player 1
+    </h2>
+    <form method="POST" action="/select">
       <fieldset>
         <legend>Drop one of your checkers down any of the slots of the grid.</legend>
         <p>
           <label for="input">Enter slot number</label>
-          <input type="text" id="input" placeholder="0, 1, 2, 3...">
+          <input type="text" id="input" name="slot" placeholder="1, 2, 3...">
+        </p>
+        <p>
+          <button type="submit">Drop Checker</button>
         </p>
       </fieldset>
     </form>
   </div>
+  <br/>
 </div>
