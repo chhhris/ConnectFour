@@ -8,7 +8,7 @@ enable :sessions
 
 x = 6
 y = 7
-BOARD = y.times.map { Array.new(x, 0) }
+BOARD = y.times.map { Array.new(x, '<>') }
 
 helpers do
 
@@ -38,9 +38,9 @@ end
 post '/select' do
 
   if player == 'player1'
-    session[:board][4][3] = 'o'
+    session[:board][4][3] = 'O'
   else
-    session[:board][3][4] = 'x'
+    session[:board][3][4] = 'X'
   end
 
   switch_turns

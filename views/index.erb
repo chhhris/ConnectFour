@@ -3,60 +3,49 @@
     <button type="submit">Start Over</button>
   </form>
 </nav>
-<div class="container mt-5 p-3">
-  <h1>Connect Four</h1>
-  <div class="container">
-    <table>
-      <tbody>
-        <% @board.each do |row| %>
-          <tr class="row">
-            <% row.each do |cell| %>
-              <%
-                  cell_style =
-                    case cell
-                    when '[]' then 'empty'
-                    when 'o' then 'player1'
-                    when 'x' then 'player2'
-                    end
-                %>
-              <td class="col <%= cell_style %>">
-                <%= cell %>
-              </td>
-            <% end %>
-          </tr>
-        <% end %>
-      </tbody>
-      <tfoot>
-        <tr class="row">
-          <% slot = 1 %>
-          <% y = 6 %>
-          <% y.times do %>
-            <th class="col">
-              <%= slot %>
-            </th>
-            <% slot += 1 %>
-          <% end %>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-  <br/>
-  <div>
+<div class="container main">
+  <form method="POST" action="/select">
+    <h1>CONNECT FOUR</h1>
+    <div class="clearfix"></div>
     <h2>
       Player 1
     </h2>
-    <form method="POST" action="/select">
-      <fieldset>
-        <legend>Drop one of your checkers down any of the slots of the grid.</legend>
-        <p>
-          <label for="input">Enter slot number</label>
-          <input type="text" id="input" name="slot" placeholder="1, 2, 3...">
-        </p>
-        <p>
-          <button type="submit">Drop Checker</button>
-        </p>
-      </fieldset>
-    </form>
-  </div>
-  <br/>
+    <legend>Drop one of your checkers down any of the slots of the grid.</legend>
+    <div class="container mb-3">
+      <table>
+        <thead>
+          <tr class="row">
+            <% slot = 1 %>
+            <% y = 6 %>
+            <% y.times do %>
+              <th class="col pt-2 pb-2">
+                <input type="radio" name="slot" value="<%= slot %>">
+              </th>
+              <% slot += 1 %>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @board.each do |row| %>
+            <tr class="row">
+              <% row.each do |cell| %>
+                <%
+                    cell_style =
+                      case cell
+                      when '<>' then 'empty'
+                      when 'o' then 'player1'
+                      when 'x' then 'player2'
+                      end
+                  %>
+                <td class="col <%= cell_style %> text-center">
+                  <%= cell %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <button type="submit" class="mb-5">Submit</button>
+  </form>
 </div>
