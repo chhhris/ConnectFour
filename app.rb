@@ -1,5 +1,6 @@
 require 'sinatra'
 require "#{Dir.pwd}/models/game.rb"
+require "#{Dir.pwd}/models/board.rb"
 require 'rack/env'
 require 'byebug'
 
@@ -10,7 +11,7 @@ helpers do
   PLAYER1 = 'Player 1'
   PLAYER2 = 'Player 2'
 
-  SWITCH_PLAYER = {
+  SWITCH_PLAYERS = {
     PLAYER2 => PLAYER1,
     PLAYER1 => PLAYER2
   }
@@ -19,7 +20,7 @@ helpers do
   def start_game
     session.clear
     game = session[:game] = Game.new
-    session[:board] = game.new_board
+    session[:board] = game.board
   end
 
   def game
@@ -34,7 +35,7 @@ helpers do
   def switch_turns
     # TO DO
     # player2 = num_players == 1 ? PLAYER2 : 'Computer'
-    session[:current_player] = SWITCH_PLAYER[current_player]
+    session[:current_player] = SWITCH_PLAYERS[current_player]
   end
 
   def num_players
@@ -45,9 +46,13 @@ end
 # TO DO redirect any 404s or 500s to root ('/')
 
 get '/' do
-  start_game
-  @current_player = current_player
-  @board = session[:board]
+  if num_players.nil?
+    @num_players_unset = true
+  else
+    start_game
+    @current_player = current_player
+    @board = session[:board]
+  end
 
   erb :index
 end
@@ -68,7 +73,8 @@ get '/in_progress' do
 end
 
 post '/set_players' do
-  nun_players = params[:num_players].to_i
+  session[:num_players] = params[:num_players].to_i
+  redirect '/'
 end
 
 post '/reset' do

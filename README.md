@@ -16,3 +16,6 @@ TODO add gemfile and run `bundle install`
 # Further saving the game progress in session is an antipattern that forces the application to be heavily dependent on state -- thus going against RESTful best practices of maintaining application statelessness.
 # This workaround is for demo / MVP purposes only and should not be used in any environment [where more than one user is making requests to the server]!
 
+
+
+Storing number of columns x rows as environment variables allows configuration without having to redeploy the app.

@@ -1,51 +1,56 @@
-<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
-  <form method="POST" action="/reset" class="form-inline my-2 my-lg-0">
-    <button type="submit">Start Over</button>
-  </form>
-</nav>
 <div class="container main">
-  <form method="POST" action="/move">
-    <h1>CONNECT FOUR</h1>
-    <div class="clearfix"></div>
-    <h2>
-      <%= @current_player %>
-    </h2>
-    <legend>Drop one of your checkers down any open slot in the grid.</legend>
-    <div class="container mb-3">
-      <table>
-        <thead>
-          <tr class="row">
-            <% slot = 0 %>
-            <% y = 6 %>
-            <% y.times do %>
-              <th class="col pt-2 pb-2">
-                <input type="radio" name="slot" value="<%= slot %>">
-              </th>
-              <% slot += 1 %>
-            <% end %>
-          </tr>
-        </thead>
-        <tbody>
-          <% @board.each do |row| %>
-            <tr class="row">
-              <% row.each do |cell| %>
-                <%
-                    cell_style =
-                      case cell
-                      when 0 then 'empty'
-                      when 1 then 'player1'
-                      when -1 then 'player2'
-                      end
-                  %>
-                <td class="col <%= cell_style %> text-center">
-                  <%= cell %>
-                </td>
+  <div class="container">
+    <% if @num_players_unset %>
+      <h2>Select game</h2>
+      <form method="POST" action="/set_players">
+        <label>
+          <input type="radio" name="num_players" value="1" checked>
+          <span>One Player</span>
+        </label>
+        <br/>
+        <label>
+          <input type="radio" name="num_players" value="2">
+          <span>Two Player</span>
+        </label>
+        <br/>
+        <button type="submit" class="start-btn">Start Game</button>
+      </form>
+    <% else %>
+      <form method="POST" action="/move">
+      <div class="clearfix"></div>
+        <h2 class="current-player"><%= @current_player %></h2>
+        <legend>Drop one of your checkers down any open slot in the grid.</legend>
+        <div class="container mb-3">
+          <table>
+            <thead>
+              <tr class="row">
+                <% slot = 0 %>
+                <% @board[0].length.times do %>
+                  <% filled = @board[0][slot] != 0 %>
+                  <th class="col pt-2 pb-2 <%= 'filled' if filled %>">
+                    <input type="radio" name="slot" value="<%= slot %>" <%= 'disabled' if filled %> >
+                  </th>
+                  <% slot += 1 %>
+                <% end %>
+              </tr>
+            </thead>
+            <tbody>
+              <% @cell_style ||= { 0 => 'empty', 1 => 'player1', -1 => 'player2' } %>
+
+              <% @board.each do |row| %>
+                <tr class="row">
+                  <% row.each do |cell| %>
+                    <td class="col <%= @cell_style[cell] %> text-center">
+                      <%= cell %>
+                    </td>
+                  <% end %>
+                </tr>
               <% end %>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-    <button type="submit" class="mb-5">Submit</button>
-  </form>
+            </tbody>
+          </table>
+        </div>
+        <button type="submit" class="mb-5">Submit</button>
+      </form>
+    <% end %>
+  </div>
 </div>
