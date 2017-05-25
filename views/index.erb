@@ -8,8 +8,7 @@
     <h1>CONNECT FOUR</h1>
     <div class="clearfix"></div>
     <h2>
-      <% player = @player == 'player1' ? 'Player 1' : 'Player 2' %>
-      <%= player %>
+      <%= @current_player %>
     </h2>
     <legend>Drop one of your checkers down any open slot in the grid.</legend>
     <div class="container mb-3">
@@ -33,9 +32,9 @@
                 <%
                     cell_style =
                       case cell
-                      when '<>' then 'empty'
-                      when 'O' then 'player1'
-                      when 'X' then 'player2'
+                      when 0 then 'empty'
+                      when 1 then 'player1'
+                      when -1 then 'player2'
                       end
                   %>
                 <td class="col <%= cell_style %> text-center">
