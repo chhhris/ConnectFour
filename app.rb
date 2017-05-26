@@ -1,6 +1,5 @@
 require 'sinatra'
 require "#{Dir.pwd}/models/game.rb"
-require "#{Dir.pwd}/models/board.rb"
 require 'rack/env'
 require 'byebug'
 
@@ -9,81 +8,74 @@ enable :sessions
 
 helpers do
 
-  SWITCH_PLAYERS = {
-    Game::PLAYER2 => Game::PLAYER1,
-    Game::PLAYER1 => Game::PLAYER2
-  }
-
-  # MOVE THIS LOGIC TO GAME CLASS
-  def start_game
-    session.clear
-    session[:board] = Board.new.set_board
-    session[:game] = Game.new
-  end
-
   def game
     session[:game]
   end
 
-  # get the player's name when initializing 1Player vs Computer !?!?
-  def current_player
-    session[:current_player] ||= Game::PLAYER1
-  end
-
   def switch_turns
-    # TO DO
-    # player2 = num_players == 1 ? PLAYER2 : 'Computer'
-    session[:current_player] = SWITCH_PLAYERS[current_player]
+    game.current_player = Game::SWITCH_PLAYERS[game.current_player]
+
+    # session[:current_player] = begin
+    #   if session[:num_players] > 1
+    #     Game::SWITCH_PLAYERS[current_player]
+    #   else
+    #     Game::TOGGLE_CPU_TURN[current_player]
+    #   end
+    # end
   end
 
-  def num_players
-    session[:num_players]
-  end
 end
 
 # TO DO redirect any 404s or 500s to root ('/')
 
 get '/' do
-  if num_players.nil?
-    @num_players_unset = true
-  else
-    start_game
-    @current_player = current_player
-    @board = session[:board]
+  @game = session[:game] = Game.new
+
+  # if game.nil? || game.num_players.nil?
+
+  # else
+  #   @current_player = current_player
+  #   @board = game.board
+  # end
+
+  erb :index
+end
+
+get '/in_progress' do
+  @game = game
+  @board = game.board
+  @current_player = game.current_player
+
+  if @current_player == Game::COMPUTER
+    game.execute_computer_move
+    switch_turns
+    redirect to '/in_progress'
   end
 
   erb :index
 end
 
 get '/game_over' do
-  @current_player = session[:current_player]
+  @current_player = game.current_player
   @game = game
 
   erb :game_over
 end
 
+post '/set_players' do
+  game.num_players = params[:num_players].to_i
+  redirect to '/in_progress'
+end
+
 post '/move' do
-  session[:board] = game.make_move(session[:board], params[:slot].to_i, current_player)
+  game.board = game.process_move(game.board, params[:slot].to_i, game.current_player)
 
   if game.connect_four || game.over
-    session[:game] = game
-    redirect '/game_over'
+    redirect to '/game_over'
   else
     switch_turns
-    redirect '/in_progress'
+    redirect to '/in_progress'
   end
-end
-
-get '/in_progress' do
-  @board = session[:board]
-  @current_player = current_player
-
-  erb :index
-end
-
-post '/set_players' do
-  session[:num_players] = params[:num_players].to_i
-  redirect '/'
 end
 
 post '/reset' do

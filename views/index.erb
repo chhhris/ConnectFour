@@ -1,6 +1,6 @@
 <div class="container main">
   <div class="container">
-    <% if @num_players_unset %>
+    <% if @game.num_players.nil? %>
       <!-- refactor to view partial -->
 
       <h2>Select game</h2>
