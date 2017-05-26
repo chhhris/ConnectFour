@@ -8,19 +8,17 @@ use Rack::Env
 enable :sessions
 
 helpers do
-  PLAYER1 = 'Player 1'
-  PLAYER2 = 'Player 2'
 
   SWITCH_PLAYERS = {
-    PLAYER2 => PLAYER1,
-    PLAYER1 => PLAYER2
+    Game::PLAYER2 => Game::PLAYER1,
+    Game::PLAYER1 => Game::PLAYER2
   }
 
   # MOVE THIS LOGIC TO GAME CLASS
   def start_game
     session.clear
-    game = session[:game] = Game.new
-    session[:board] = game.board
+    session[:board] = Board.new.set_board
+    session[:game] = Game.new
   end
 
   def game
@@ -29,7 +27,7 @@ helpers do
 
   # get the player's name when initializing 1Player vs Computer !?!?
   def current_player
-    session[:current_player] ||= PLAYER1
+    session[:current_player] ||= Game::PLAYER1
   end
 
   def switch_turns
@@ -57,12 +55,23 @@ get '/' do
   erb :index
 end
 
-post '/move' do
-  updated_board = game.update_board(session[:board], params[:slot].to_i, current_player)
-  session[:board] = updated_board
-  switch_turns
+get '/game_over' do
+  @current_player = session[:current_player]
+  @game = game
 
-  redirect '/in_progress'
+  erb :game_over
+end
+
+post '/move' do
+  session[:board] = game.make_move(session[:board], params[:slot].to_i, current_player)
+
+  if game.connect_four || game.over
+    session[:game] = game
+    redirect '/game_over'
+  else
+    switch_turns
+    redirect '/in_progress'
+  end
 end
 
 get '/in_progress' do

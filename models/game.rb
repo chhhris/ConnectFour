@@ -1,37 +1,34 @@
 class Game
-  attr_accessor :board, :current_board, :currrent_player, :current_checker, :checker_coordinates
+  attr_accessor :in_progress_board, :currrent_player, :current_checker, :checker_coordinates, :connect_four, :over
 
-  def initialize
-    @board = Board.new.set_board
+  PLAYER1 = 'Player 1'
+  PLAYER2 = 'Player 2'
+  COMPUTER = 'Computer'
+
+  def make_move(current_board, slot, current_player)
+    self.in_progress_board, self.currrent_player = current_board, current_player
+    # use constant for player
+    self.current_checker = current_player == PLAYER1 ? 1 : -1
+    self.checker_coordinates = drop_checker(slot)
+    self.connect_four = check_for_connect_four
+    self.over = check_if_board_full
+    in_progress_board
   end
 
-  def update_board(board, column, player)
-    self.current_board, self.currrent_player = board, player
-    # use constant for player
-    self.current_checker = player == 'Player 1' ? 1 : -1
-    self.checker_coordinates = drop_checker(column)
+  def check_for_connect_four
+    count_of_consecutive_checkers > 3 ? true : false
+  end
 
-    # REMINDER add 1 to count
-    # e.g. count_up + count_down + 1
-    count = (consecutive_checkers || 0)
-
-    if count > 3 || count < -3
-      game_over_with_winner!
-    else
-      return current_board
-    end
+  def check_if_board_full
+    in_progress_board[0].all? { |checker| checker != 0 } ? true : false
   end
 
   private
 
-  def game_over_with_winner!
-    # code goes here
-  end
-
-  def drop_checker(column)
+  def drop_checker(slot)
     # TODO check if board is full
-    row = current_board.length - 1
-    until(current_board[row][column] == 0) do
+    row = in_progress_board.length - 1
+    until(in_progress_board[row][slot] == 0) do
       if row > 0
         row -= 1
       else
@@ -39,61 +36,59 @@ class Game
       end
     end
     # TO DO make sure x and y coordinates are listed currectly
-    current_board[row][column] = current_checker
-    [column, row]
+    in_progress_board[row][slot] = current_checker
+    [slot, row]
   end
 
-  def consecutive_checkers
-    x, y = checker_coordinates[0], checker_coordinates[1]
+  def count_of_consecutive_checkers
+    vertical_count = count_down + count_up + 1
+    horizontal_count = count_left + count_right + 1
+    diagonal_asc_count = count_diagonal_up_and_to_the_right + count_diagonal_down_and_to_the_left + 1
+    diagonal_desc_count = count_diagonal_down_and_to_the_right + count_diagonal_up_and_to_the_left + 1
 
-    [ count_consecutive_cells(:horizontally),
-      count_consecutive_cells(:vertically),
-      count_consecutive_cells(:diagonally_asc),
-      count_consecutive_cells(:diagonally_desc) ].max
+    [ vertical_count, horizontal_count, diagonal_asc_count, diagonal_desc_count ].max
   end
 
-  OPERANDS = {
-    # horizontally: []
-  }
-  def count_consecutive_cells(direction)
-    counter = 0
-  end
 
   # check CHECKER / PLAYER instead of hardcoding 1
-  def count_down(grid, x, y, target)
+  def count_down
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move = y.send(:+, 1)
-    while(grid[move] && grid[move][x] == target) do
+    while(move < in_progress_board.length && in_progress_board[move][x] == current_checker) do
       counter += 1
       move = move.send(:+, 1)
     end
     counter
   end
 
-  def count_up(grid, x, y, target)
+  def count_up
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move = y.send(:-, 1)
-    while(grid[move] && grid[move][x] == target) do
+    while(move >= 0 && in_progress_board[move][x] == current_checker) do
       counter += 1
       move = move.send(:-, 1)
     end
     counter
   end
 
-  def count_left(grid, x, y, target)
+  def count_left
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move = x.send(:-, 1)
-    while(grid[y][move] && grid[y][move] == target) do
+    while(move >= 0 && in_progress_board[y][move] == current_checker) do
       counter += 1
       move = move.send(:-, 1)
     end
     counter
   end
 
-  def count_right(grid, x, y, target)
+  def count_right
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move = x.send(:+, 1)
-    while(grid[y][move] && grid[y][move] == target) do
+    while(move < in_progress_board[0].length && in_progress_board[y][move] == current_checker) do
       counter += 1
       move = move.send(:+, 1)
     end
@@ -101,53 +96,57 @@ class Game
   end
 
   # Diagonal ASC
-  def count_diagonal_up_and_to_the_right(grid, x, y, target)
+  def count_diagonal_up_and_to_the_right
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move_up = y.send(:-, 1)
     move_right = x.send(:+, 1)
-    while(grid[move_up] && grid[move_up][move_right] && grid[move_up][move_right] == target) do
+    while(move_up >= 0 && move_right < in_progress_board[0].length && in_progress_board[move_up][move_right] == current_checker) do
       counter += 1
-      move_up = y.send(:-, 1)
-      move_right = x.send(:+, 1)
+      move_up = move_up.send(:-, 1)
+      move_right = move_right.send(:+, 1)
     end
     counter
   end
 
-  def count_diagonal_down_and_to_the_left(grid, x, y, target)
+  def count_diagonal_down_and_to_the_left
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move_down = y.send(:+, 1)
     move_left = x.send(:-, 1)
-    while(grid[move_down] && grid[move_down][move_left] && grid[move_down][move_left] == target) do
+    while(move_down < in_progress_board.length && move_left >= 0 && in_progress_board[move_down][move_left] == current_checker) do
       counter += 1
-      move_down = y.send(:-, 1)
-      move_left = x.send(:-, 1)
+      move_down = move_down.send(:+, 1)
+      move_left = move_left.send(:-, 1)
     end
     counter
   end
 
 
   # Diagonal DESC
-  def count_diagonal_down_and_to_the_right(grid, x, y, target)
+  def count_diagonal_down_and_to_the_right
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move_down = y.send(:+, 1)
     move_right = x.send(:+, 1)
-    while(grid[move_down] && grid[move_down][move_right] && grid[move_down][move_right] == target) do
+    while(move_down < in_progress_board.length && move_right < in_progress_board[0].length && in_progress_board[move_down][move_right] == current_checker) do
       counter += 1
-      move_down = y.send(:-, 1)
-      move_right = x.send(:+, 1)
+      move_down = move_down.send(:+, 1)
+      move_right = move_right.send(:+, 1)
     end
     counter
   end
 
-
-  def count_diagonal_up_and_to_the_left(grid, x, y, target)
+  # PROBLEM *******************************************
+  def count_diagonal_up_and_to_the_left
+    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
     move_up = y.send(:-, 1)
     move_left = x.send(:-, 1)
-    while(grid[move_up] && grid[move_up][move_left] && grid[move_up][move_left] == target) do
+    while(move_up >= 0 && move_left >= 0 && in_progress_board[move_up][move_left] == current_checker) do
       counter += 1
-      move_up = y.send(:-, 1)
-      move_left = x.send(:-, 1)
+      move_up = move_up.send(:-, 1)
+      move_left = move_left.send(:-, 1)
     end
     counter
   end

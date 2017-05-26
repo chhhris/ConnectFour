@@ -1,0 +1,12 @@
+<div class="container main">
+  <% if @game.connect_four %>
+
+    <div class="winner"><%= @current_player %> is the winner!</div>
+
+  <% else %>
+
+    <h2>Game Over</h2>
+    <h3>Play again</h3>
+
+  <% end %>
+</div>
