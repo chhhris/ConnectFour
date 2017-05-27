@@ -1,21 +1,41 @@
-## Running
+# CONNECT FOUR
+_Using Ruby implement the classic children's game Connect Four™._
 
-# download app folder
-# from app folder directory, run the following command:
+## System requirements to play the game.
+- Ruby
+- [Bundler](http://bundler.io/)
+- Your browser must have cookies enabled
 
-`$ bundle install`
-`$ ruby app.rb`
+## Instructions
+- Clone the [repo on Github](https://github.com/chhhris/ConnectFour) or otherwise download the application folder.
+- From app folder directory, run the following command:
+```
+$ bundle install
+# install Sinatra gem
+```
 
-# Must have cookies enabled to play the game.
+```
+$ ruby app.rb
+# spin up app server
+```
 
-TODO add gemfile and run `bundle install`
+- View at [http://localhost:4567/](http://localhost:4567/)
+- The game can be played as One Player (against the computer) or Two Player.
 
-## Notes
+## Notes / future improvements
 
-# The board and game play are saved in the session as a quick workaround to save the overhead of configuring a datastore. Drawbacks to this approach include [hitting limited memory and disk space limits].
-# Further saving the game progress in session is an antipattern that forces the application to be heavily dependent on state -- thus going against RESTful best practices of maintaining application statelessness.
-# This workaround is for demo / MVP purposes only and should not be used in any environment [where more than one user is making requests to the server]!
+#### Computer play
+- The computer's playing strategy is fairly naive. Further iterations of the game should add more complexity to the computer's analysis with respect to the optimal next move.
 
+#### Saving game data in the session / browser cookie
+- This application saves game data in the browser cookie in order to simplify sharing and running this application on a developer's local machine.
+- The board and game play are saved in the session as a quick workaround to eliminate the overhead of configuring a datastore.
+- However I would like to acknowledge that loading application data into the session is problematic for several reasons, including the ability to tamper with the game results.
+- Further, storing the game progress in session is an antipattern that forces the application to be heavily dependent on state, which goes against RESTful best practices of maintaining an application's statelessness.
 
+#### The number of `columns` x `rows` is customizable
+- The values are set as environment variables in the `.env` file. The benefit is the ability to customize the size of the grid without having to redeploy the application.
 
-Storing number of columns x rows as environment variables allows configuration without having to redeploy the app.
+#### Single Player UX
+- When playing against the computer, the computer executes its move almost simultaneously with the user's.
+- The initial impression is almost that there is a bug because both checkers appear at the same time. An improved UX would visually switch turns with the computer in order to explicitly communicate the computer's move.

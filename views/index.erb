@@ -1,22 +1,8 @@
 <div class="container main">
   <div class="container">
     <% if @game.num_players.nil? %>
-      <!-- refactor to view partial -->
 
-      <h2>Select Game</h2>
-      <form method="POST" action="/set_players">
-        <label>
-          <input type="radio" name="num_players" value="1" checked>
-          <span>One Player</span>
-        </label>
-        <br/>
-        <label>
-          <input type="radio" name="num_players" value="2">
-          <span>Two Player</span>
-        </label>
-        <br/>
-        <button type="submit" class="start-btn">Start Game</button>
-      </form>
+      <%= erb :_select_num_players %>
 
     <% else %>
 
