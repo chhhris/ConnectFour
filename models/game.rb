@@ -3,8 +3,14 @@ require_relative 'board'
 class Game
   attr_accessor :board, :num_players, :current_player, :current_checker, :checker_coordinates, :connect_four, :over
 
+  EMPTY_CELL = 0
+
   PLAYER1 = 'Player 1'
+  PLAYER1_VALUE = 1
+
   PLAYER2 = 'Player 2'
+  PLAYER2_VALUE = 2
+
   COMPUTER = 'Computer'
 
   SWITCH_PLAYERS = {
@@ -29,12 +35,11 @@ class Game
     self.board = current_board
     self.current_player = player
 
-    # better as instance variables?
-    self.current_checker = current_player == PLAYER1 ? 1 : 2
+    self.current_checker = current_player == PLAYER1 ? PLAYER1_VALUE : PLAYER2_VALUE
     self.checker_coordinates = drop_checker(slot)
 
-    self.connect_four = check_for_connect_four
-    self.over = check_if_board_full
+    self.connect_four = check_if_connect_four?
+    self.over = check_if_board_full?
     board
   end
 
@@ -45,21 +50,19 @@ class Game
     max_defensive_count = 0
     optimal_defensive_slot = 0
 
-    board[0].each_with_index do |cell, slot|
+    board.first.each_with_index do |cell, slot|
       if cell == 0
         self.checker_coordinates = drop_checker(slot, assign_cell: false)
 
-        self.current_checker = 2
+        self.current_checker = PLAYER2_VALUE
         offense_count = count_of_adjacent_checkers
-
         if offense_count >= max_offensive_count
           max_offensive_count = offense_count
           optimal_offensive_slot = slot
         end
 
-        self.current_checker = 1
+        self.current_checker = PLAYER1_VALUE
         defense_count = count_of_adjacent_checkers
-
         if defense_count >= max_defensive_count
           max_defensive_count = defense_count
           optimal_defensive_slot = slot
@@ -77,26 +80,25 @@ class Game
       end
     end
 
-    self.current_checker = 2
+    self.current_checker = PLAYER2_VALUE
     self.checker_coordinates = drop_checker(optimal_slot, assign_cell: true)
-    self.connect_four = check_for_connect_four
-    self.over = check_if_board_full
+    self.connect_four = check_if_connect_four?
+    self.over = check_if_board_full?
   end
 
-  def check_for_connect_four
+  def check_if_connect_four?
     count_of_adjacent_checkers >= 3 ? true : false
   end
 
-  def check_if_board_full
-    board[0].all? { |checker| checker != 0 } ? true : false
+  def check_if_board_full?
+    board.first.all? { |checker| checker != EMPTY_CELL } ? true : false
   end
 
   private
 
   def drop_checker(slot, assign_cell: true)
-    # TODO check if board is full
     row = board.length - 1
-    until(board[row][slot] == 0) do
+    until(board[row][slot] == EMPTY_CELL) do
       if row > 0
         row -= 1
       else
@@ -109,8 +111,6 @@ class Game
   end
 
   def count_of_adjacent_checkers
-    # TODO verify no need to count up
-    # vertical_count = count_down + count_up
     horizontal_count = count_left + count_right
     diagonal_asc_count = count_diagonal_up_and_to_the_right + count_diagonal_down_and_to_the_left
     diagonal_desc_count = count_diagonal_down_and_to_the_right + count_diagonal_up_and_to_the_left
@@ -118,8 +118,6 @@ class Game
     [ count_down, horizontal_count, diagonal_asc_count, diagonal_desc_count ].max
   end
 
-
-  # check CHECKER / PLAYER instead of hardcoding 1
   def count_down
     x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
@@ -130,17 +128,6 @@ class Game
     end
     counter
   end
-
-  # def count_up
-  #   x, y = checker_coordinates[0], checker_coordinates[1]
-  #   counter = 0
-  #   move = y.send(:-, 1)
-  #   while(move >= 0 && board[move][x] == current_checker) do
-  #     counter += 1
-  #     move = move.send(:-, 1)
-  #   end
-  #   counter
-  # end
 
   def count_left
     x, y = checker_coordinates[0], checker_coordinates[1]
@@ -191,7 +178,6 @@ class Game
     counter
   end
 
-
   # Diagonal DESC
   def count_diagonal_down_and_to_the_right
     x, y = checker_coordinates[0], checker_coordinates[1]
@@ -206,7 +192,6 @@ class Game
     counter
   end
 
-  # PROBLEM *******************************************
   def count_diagonal_up_and_to_the_left
     x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
@@ -219,7 +204,6 @@ class Game
     end
     counter
   end
-
 
 end
 

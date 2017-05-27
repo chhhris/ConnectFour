@@ -17,8 +17,6 @@ helpers do
   end
 
   def switch_turns
-    # game.current_player = Game::SWITCH_PLAYERS[game.current_player]
-
     game.current_player = begin
       if game.num_players > 1
         Game::SWITCH_PLAYERS[game.current_player]
