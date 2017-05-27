@@ -9,6 +9,8 @@ require 'byebug'
 
 use Rack::Env
 enable :sessions
+set :raise_errors, false
+set :show_exceptions, false
 
 helpers do
 
@@ -83,5 +85,15 @@ end
 post '/start_new_game' do
   session.clear
 
-  redirect '/'
+  redirect to '/'
+end
+
+error 500 do
+  session.clear
+  redirect to '/'
+end
+
+error 404 do
+  path = game.nil? ? '/' : '/game_in_progress'
+  redirect to path
 end

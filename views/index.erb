@@ -3,7 +3,7 @@
     <% if @game.num_players.nil? %>
       <!-- refactor to view partial -->
 
-      <h2>Select game</h2>
+      <h2>Select Game</h2>
       <form method="POST" action="/set_players">
         <label>
           <input type="radio" name="num_players" value="1" checked>
@@ -19,7 +19,6 @@
       </form>
 
     <% else %>
-      <!-- refactor to view partial -->
 
       <form method="POST" action="/drop_checker">
         <div class="clearfix"></div>
@@ -30,7 +29,6 @@
         <%= erb :_board %>
         <button type="submit" class="mb-5">Submit</button>
       </form>
-      <!-- refactor to view partial -->
 
     <% end %>
   </div>
