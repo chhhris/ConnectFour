@@ -5,13 +5,10 @@ class Game
       :checker_coordinates, :connect_four, :over
 
   EMPTY_CELL = 0
-
   PLAYER1 = 'Player 1'.freeze
-  PLAYER1_VALUE = 1
-
   PLAYER2 = 'Player 2'.freeze
+  PLAYER1_VALUE = 1
   PLAYER2_VALUE = 2
-
   COMPUTER = 'Computer'.freeze
 
   SWITCH_PLAYERS = {
@@ -90,7 +87,7 @@ class Game
   end
 
   def check_if_connect_four?
-    count_of_adjacent_checkers >= 3 ? true : false
+    count_of_adjacent_checkers >= 3
   end
 
   def check_if_board_full?
@@ -102,7 +99,7 @@ class Game
   def drop_checker(slot, assign_cell: true)
     row = board.length - 1
     until board[row][slot] == EMPTY_CELL
-      return if row <= 0
+      return if row < 0
       row -= 1
     end
 
@@ -112,95 +109,96 @@ class Game
 
   def count_of_adjacent_checkers
     horizontal_count = count_left + count_right
-    diagonal_asc_count = count_diagonal_up_and_to_the_right + count_diagonal_down_and_to_the_left
-    diagonal_desc_count = count_diagonal_down_and_to_the_right + count_diagonal_up_and_to_the_left
+    diagonal_asc_count = count_diagonal_asc_right + count_diagonal_desc_left
+    diagonal_desc_count = count_diagonal_desc_right + count_diagonal_asc_left
 
     [count_down, horizontal_count, diagonal_asc_count, diagonal_desc_count].max
   end
 
+  def row
+    checker_coordinates.first
+  end
+
+  def column
+    checker_coordinates.last
+  end
+
   def count_down
-    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
-    move = y.send(:+, 1)
-    while move < board.length && board[move][x] == current_checker
+    move = column + 1
+    while move < board.length && board[move][row] == current_checker
       counter += 1
-      move = move.send(:+, 1)
+      move += 1
     end
     counter
   end
 
   def count_left
-    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
-    move = x.send(:-, 1)
-    while move >= 0 && board[y][move] == current_checker
+    move = row - 1
+    while move >= 0 && board[column][move] == current_checker
       counter += 1
-      move = move.send(:-, 1)
+      move -= 1
     end
     counter
   end
 
   def count_right
-    x, y = checker_coordinates[0], checker_coordinates[1]
     counter = 0
-    move = x.send(:+, 1)
-    while move < board[0].length && board[y][move] == current_checker
+    move = row + 1
+    while move < board.first.length && board[column][move] == current_checker
       counter += 1
-      move = move.send(:+, 1)
+      move += 1
     end
     counter
   end
 
   # Diagonal ASC
-  def count_diagonal_up_and_to_the_right
-    x, y = checker_coordinates[0], checker_coordinates[1]
+  def count_diagonal_asc_right
     counter = 0
-    move_up = y.send(:-, 1)
-    move_right = x.send(:+, 1)
-    while move_up >= 0 && move_right < board[0].length && board[move_up][move_right] == current_checker
+    vertical = column - 1
+    horizontal = row + 1
+    while vertical >= 0 && horizontal < board.first.length && board[vertical][horizontal] == current_checker
       counter += 1
-      move_up = move_up.send(:-, 1)
-      move_right = move_right.send(:+, 1)
+      vertical -= 1
+      horizontal += 1
     end
     counter
   end
 
-  def count_diagonal_down_and_to_the_left
-    x, y = checker_coordinates[0], checker_coordinates[1]
+  def count_diagonal_desc_left
     counter = 0
-    move_down = y.send(:+, 1)
-    move_left = x.send(:-, 1)
-    while move_down < board.length && move_left >= 0 && board[move_down][move_left] == current_checker
+    vertical = column + 1
+    horizontal = row - 1
+    while vertical < board.length && horizontal >= 0 && board[vertical][horizontal] == current_checker
       counter += 1
-      move_down = move_down.send(:+, 1)
-      move_left = move_left.send(:-, 1)
+      vertical += 1
+      horizontal -= 1
     end
     counter
   end
 
   # Diagonal DESC
-  def count_diagonal_down_and_to_the_right
-    x, y = checker_coordinates[0], checker_coordinates[1]
+  def count_diagonal_desc_right
     counter = 0
-    move_down = y.send(:+, 1)
-    move_right = x.send(:+, 1)
-    while move_down < board.length && move_right < board[0].length && board[move_down][move_right] == current_checker
+    vertical = column + 1
+    horizontal = row + 1
+    while vertical < board.length && horizontal < board.first.length && board[vertical][horizontal] == current_checker
       counter += 1
-      move_down = move_down.send(:+, 1)
-      move_right = move_right.send(:+, 1)
+      vertical += 1
+      horizontal += 1
     end
     counter
   end
 
-  def count_diagonal_up_and_to_the_left
-    x, y = checker_coordinates[0], checker_coordinates[1]
+  def count_diagonal_asc_left
     counter = 0
-    move_up = y.send(:-, 1)
-    move_left = x.send(:-, 1)
-    while move_up >= 0 && move_left >= 0 && board[move_up][move_left] == current_checker
+    vertical = column - 1
+    horizontal = row - 1
+    while vertical >= 0 && horizontal >= 0 && board[vertical][horizontal] == current_checker
       counter += 1
-      move_up = move_up.send(:-, 1)
-      move_left = move_left.send(:-, 1)
+      vertical -= 1
+      horizontal -= 1
     end
     counter
   end

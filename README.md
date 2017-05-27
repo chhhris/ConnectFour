@@ -27,6 +27,9 @@ $ ruby app.rb
 #### Computer play
 - The computer's playing strategy is fairly naive. Further iterations of the game should add more complexity to the computer's analysis with respect to the optimal next move.
 
+#### Code used to count adjacent checkers
+- The various `count_*` methods follow a similar format; I would look to DRY that section up.
+
 #### Saving game data in the session / browser cookie
 - This application saves game data in the browser cookie in order to simplify sharing and running this application on a developer's local machine.
 - The board and game play are saved in the session as a quick workaround to eliminate the overhead of configuring a datastore.
