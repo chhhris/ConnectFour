@@ -1,7 +1,11 @@
 require 'sinatra'
 require "#{Dir.pwd}/models/game.rb"
 require 'rack/env'
+
+# Remove
 require 'byebug'
+# TO DO run
+# https://github.com/bbatsov/rubocop
 
 use Rack::Env
 enable :sessions
@@ -41,8 +45,13 @@ get '/game_in_progress' do
 
   if @current_player == Game::COMPUTER
     game.execute_computer_move
-    switch_turns
-    redirect to '/game_in_progress'
+
+    if game.connect_four || game.over
+      redirect to '/game_over'
+    else
+      switch_turns
+      redirect to '/game_in_progress'
+    end
   end
 
   erb :index
@@ -51,6 +60,7 @@ end
 get '/game_over' do
   @current_player = game.current_player
   @game = game
+  @board = game.board
 
   erb :game_over
 end
@@ -62,7 +72,7 @@ post '/set_players' do
 end
 
 post '/drop_checker' do
-  game.board = game.process_move(game.board, params[:slot].to_i, game.current_player)
+  game.board = game.process_move_and_return_board(game.board, params[:slot].to_i, game.current_player)
 
   if game.connect_four || game.over
     redirect to '/game_over'

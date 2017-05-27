@@ -1,9 +1,10 @@
 <div class="container main">
-  <% if @game.connect_four %>
-    <div class="winner"><%= @current_player %> is the winner!</div>
-    <!-- render @board partial -->
-  <% else %>
-    <h2>Game Over</h2>
-    <h3>Play again</h3>
-  <% end %>
+  <div class="game-over">
+    <% if @game.connect_four %>
+      <%= @current_player %> wins the game!
+    <% else %>
+      Game Over... Play Again
+    <% end %>
+  </div>
+  <%= erb :_board %>
 </div>

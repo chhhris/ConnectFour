@@ -22,40 +22,12 @@
       <!-- refactor to view partial -->
 
       <form method="POST" action="/drop_checker">
-      <div class="clearfix"></div>
-      <h2 class="current-player <%= @current_player == 'Player 1' ? 'black' : 'red' %>">
-        <%= @current_player %>
-      </h2>
-      <legend>Drop one of your checkers down any open slot in the grid.</legend>
-        <div class="container mb-3">
-          <table>
-            <thead>
-              <tr class="row">
-                <% slot = 0 %>
-                <% @board[0].length.times do %>
-                  <% filled = @board[0][slot] != 0 %>
-                  <th class="col pt-2 pb-2 <%= 'filled' if filled %>">
-                    <input type="radio" name="slot" value="<%= slot %>" <%= 'disabled' if filled %> >
-                  </th>
-                  <% slot += 1 %>
-                <% end %>
-              </tr>
-            </thead>
-            <tbody>
-              <% @cell_style ||= { 0 => 'empty', 1 => 'player1', -1 => 'player2' } %>
-
-              <% @board.each do |row| %>
-                <tr class="row">
-                  <% row.each do |cell| %>
-                    <td class="col <%= @cell_style[cell] %> text-center">
-                      <%= cell %>
-                    </td>
-                  <% end %>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
+        <div class="clearfix"></div>
+        <h2 class="current-player <%= @current_player == 'Player 1' ? 'black' : 'red' %>">
+          <%= @current_player %>
+        </h2>
+        <legend>Drop one of your checkers down any open slot in the grid.</legend>
+        <%= erb :_board %>
         <button type="submit" class="mb-5">Submit</button>
       </form>
       <!-- refactor to view partial -->
