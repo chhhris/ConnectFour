@@ -2,18 +2,12 @@ require 'sinatra'
 require "#{Dir.pwd}/models/game.rb"
 require 'rack/env'
 
-# Remove
-require 'byebug'
-# TO DO run
-# https://github.com/bbatsov/rubocop
-
 use Rack::Env
 enable :sessions
 set :raise_errors, false
 set :show_exceptions, false
 
 helpers do
-
   def game
     session[:game]
   end
@@ -27,10 +21,7 @@ helpers do
       end
     end
   end
-
 end
-
-# TO DO redirect any 404s or 500s to root ('/')
 
 get '/' do
   @game = session[:game] = Game.new
