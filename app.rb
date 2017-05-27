@@ -13,15 +13,15 @@ helpers do
   end
 
   def switch_turns
-    game.current_player = Game::SWITCH_PLAYERS[game.current_player]
+    # game.current_player = Game::SWITCH_PLAYERS[game.current_player]
 
-    # session[:current_player] = begin
-    #   if session[:num_players] > 1
-    #     Game::SWITCH_PLAYERS[current_player]
-    #   else
-    #     Game::TOGGLE_CPU_TURN[current_player]
-    #   end
-    # end
+    game.current_player = begin
+      if game.num_players > 1
+        Game::SWITCH_PLAYERS[game.current_player]
+      else
+        Game::TOGGLE_CPU_TURN[game.current_player]
+      end
+    end
   end
 
 end
@@ -31,17 +31,10 @@ end
 get '/' do
   @game = session[:game] = Game.new
 
-  # if game.nil? || game.num_players.nil?
-
-  # else
-  #   @current_player = current_player
-  #   @board = game.board
-  # end
-
   erb :index
 end
 
-get '/in_progress' do
+get '/game_in_progress' do
   @game = game
   @board = game.board
   @current_player = game.current_player
@@ -49,7 +42,7 @@ get '/in_progress' do
   if @current_player == Game::COMPUTER
     game.execute_computer_move
     switch_turns
-    redirect to '/in_progress'
+    redirect to '/game_in_progress'
   end
 
   erb :index
@@ -64,21 +57,23 @@ end
 
 post '/set_players' do
   game.num_players = params[:num_players].to_i
-  redirect to '/in_progress'
+
+  redirect to '/game_in_progress'
 end
 
-post '/move' do
+post '/drop_checker' do
   game.board = game.process_move(game.board, params[:slot].to_i, game.current_player)
 
   if game.connect_four || game.over
     redirect to '/game_over'
   else
     switch_turns
-    redirect to '/in_progress'
+    redirect to '/game_in_progress'
   end
 end
 
-post '/reset' do
+post '/start_new_game' do
   session.clear
+
   redirect '/'
 end

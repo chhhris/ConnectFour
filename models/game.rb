@@ -25,9 +25,8 @@ class Game
     @current_player ||= PLAYER1
   end
 
-  def process_move(current_board, slot, current_player)
-    self.board, self.current_player = current_board, current_player
-    # use constant for player
+  def process_move(current_board, slot, player)
+    self.board, self.current_player = current_board, player
     self.current_checker = current_player == PLAYER1 ? 1 : -1
     self.checker_coordinates = drop_checker(slot)
     self.connect_four = check_for_connect_four

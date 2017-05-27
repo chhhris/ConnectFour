@@ -21,9 +21,11 @@
     <% else %>
       <!-- refactor to view partial -->
 
-      <form method="POST" action="/move">
+      <form method="POST" action="/drop_checker">
       <div class="clearfix"></div>
-      <h2 class="current-player <%= @current_player == 'Player 1' ? 'black' : 'red' %>"><%= @current_player %></h2>
+      <h2 class="current-player <%= @current_player == 'Player 1' ? 'black' : 'red' %>">
+        <%= @current_player %>
+      </h2>
       <legend>Drop one of your checkers down any open slot in the grid.</legend>
         <div class="container mb-3">
           <table>
